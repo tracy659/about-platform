@@ -97,3 +97,7 @@ interface InterviewFormProps {
 interface TechIconProps {
   techStack: string[];
 }
+interface CreateResponseParams {
+  transcript: { role: string; content: string }[];
+  response: string;
+}

@@ -4,7 +4,7 @@ import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 //test
 import { db } from "@/firebase/admin";
-import { feedbackSchema } from "@/constants";
+import { feedbackSchema, responseSchema } from "@/constants";
 
 export async function createFeedback(params: CreateFeedbackParams) {
   const { interviewId, userId, transcript, feedbackId } = params;
@@ -62,6 +62,52 @@ export async function createFeedback(params: CreateFeedbackParams) {
     return { success: true, feedbackId: feedbackRef.id };
   } catch (error) {
     console.error("Error saving feedback:", error);
+    return { success: false };
+  }
+}
+export async function createResponse(params: CreateResponseParams) {
+  const { transcript, response } = params;
+
+  try {
+    const formattedTranscript = transcript
+      .map(
+        (sentence: { role: string; content: string }) =>
+          `- ${sentence.role}: ${sentence.content}\n`
+      )
+      .join("");
+
+    const { object } = await generateObject({
+      model: google("gemini-2.0-flash-001", {
+        structuredOutputs: false,
+      }),
+      schema: responseSchema,
+      prompt: `
+        You are an AI assistant for the Saudi Export Development Authority.
+        Your job is to generate a clear and relevant response to the selected topic based on the transcript and user interest.
+
+        Selected Topic: ${response}
+
+        Transcript:
+        ${formattedTranscript}
+
+        Please provide a complete and formal response to the selected topic.
+      `,
+      system:
+        "You are a professional assistant generating informative and polite responses based on a selected topic.",
+    });
+
+    const responseData = {
+      finalResponse: object.finalResponse,
+      topic: response,
+      createdAt: new Date().toISOString(),
+    };
+
+    const responseRef = db.collection("responses").doc();
+    await responseRef.set(responseData);
+
+    return { success: true, response: object.finalResponse };
+  } catch (error) {
+    console.error("Error generating response:", error);
     return { success: false };
   }
 }
