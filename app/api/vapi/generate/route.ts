@@ -5,9 +5,6 @@ import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-<<<<<<< HEAD
-  const { type, role, level, techstack, amount, userid } = await request.json();
-=======
   const {
     type,
     role,
@@ -18,7 +15,6 @@ export async function POST(request: Request) {
     WorkStyle,
     userid,
   } = await request.json();
->>>>>>> Tracy
 
   try {
     const { text: questions } = await generateText({
@@ -64,7 +60,4 @@ export async function POST(request: Request) {
 export async function GET() {
   return Response.json({ success: true, data: "Thank you!" }, { status: 200 });
 }
-<<<<<<< HEAD
-=======
 // test tracy branch
->>>>>>> Tracy
