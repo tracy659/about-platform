@@ -20,13 +20,7 @@ interface SavedMessage {
   content: string;
 }
 
-const Agent = ({
-  userName,
-  userId,
-  type,
-
-  questions,
-}: AgentProps) => {
+const Agent = ({ userName, responses, type }: AgentProps) => {
   //  const callStatus = CallStatus.FINISHED;
   // const isSpeaking = true;
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -82,13 +76,15 @@ const Agent = ({
   }, []);
 
   useEffect(() => {
+    console.log("inside second useEffect");
     const handleGenerateGeminiResponse = async (messages: SavedMessage[]) => {
+      console.log("messages", messages);
       try {
         const result = await createResponse({
           transcript: messages,
           response: messages[messages.length - 1]?.content || "",
         });
-
+        console.log("result", result);
         if (result?.response) {
           setMessages((prev) => [
             ...prev,
@@ -114,9 +110,10 @@ const Agent = ({
         router.push("/");
       } else {
         handleGenerateGeminiResponse(messages);
+        console.log("message:", messages);
       }
     }
-  }, [messages, callStatus, type, userId]);
+  }, [messages, callStatus, type]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
@@ -124,19 +121,21 @@ const Agent = ({
       await vapi.start(process.env.NEXT_PUBLIC_VAPI_About_WORKFLOW_ID!, {
         variableValues: {
           username: userName,
-          userid: userId,
+          responses: responses,
         },
       });
+      console.log("resonses test:", responses);
     } else {
-      let formattedQuestions = "";
-      if (questions) {
-        formattedQuestions = questions
+      let formattedResponses = "";
+      if (responses) {
+        formattedResponses = responses
           .map((question) => `- ${question}`)
           .join("\n");
+        console.log("formattedResponses", formattedResponses);
       }
       await vapi.start(interviewer, {
         variableValues: {
-          questions: formattedQuestions,
+          responses: formattedResponses,
         },
       });
     }

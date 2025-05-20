@@ -65,9 +65,10 @@ export async function createFeedback(params: CreateFeedbackParams) {
     return { success: false };
   }
 }
+console.log("outside createResponse first");
 export async function createResponse(params: CreateResponseParams) {
   const { transcript, response } = params;
-
+  console.log("inside createResponse first");
   try {
     const formattedTranscript = transcript
       .map(
@@ -75,14 +76,14 @@ export async function createResponse(params: CreateResponseParams) {
           `- ${sentence.role}: ${sentence.content}\n`
       )
       .join("");
-
+    console.log("formattedTranscript:", formattedTranscript);
     const { object } = await generateObject({
       model: google("gemini-2.0-flash-001", {
         structuredOutputs: false,
       }),
       schema: responseSchema,
       prompt: `
-        You are an AI assistant for the Saudi Export Development Authority.
+        You are an AI assistant for the Saudi Exports Authority’s participation in the Baghdad International Fair.
         Your job is to generate a clear and relevant response to the selected topic based on the transcript and user interest.
 
         Selected Topic: ${response}

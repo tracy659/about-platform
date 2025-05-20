@@ -15,13 +15,13 @@ export async function POST(request: Request) {
         Please return only the response, without any additional text.
         The response are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
         
-        
         Thank you! <3
     `,
     });
 
     const About = {
-      responses: JSON.parse(responses),
+      response,
+      responses,
       finalized: true,
       coverImage: getRandomInterviewCover(),
       createdAt: new Date().toISOString(),
@@ -39,4 +39,3 @@ export async function POST(request: Request) {
 export async function GET() {
   return Response.json({ success: true, data: "Thank you!" }, { status: 200 });
 }
-// test tracy branch
