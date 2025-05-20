@@ -110,10 +110,9 @@ const Agent = ({ userName, responses, type }: AgentProps) => {
         router.push("/");
       } else {
         handleGenerateGeminiResponse(messages);
-        console.log("message:", messages);
       }
     }
-  }, [messages, callStatus, type]);
+  }, [messages, callStatus, type, router]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
